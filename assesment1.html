@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript">
+
+function test(e)
+{
+
+if(!( e.which >= 65 && e.which <=90 ))
+{
+e.preventDefault();
+
+}
+
+}
+
+function filldd() {
+
+
+course=['Computer science','Electrical engineering','Electronics engineering',' becharalor of Arts'];
+
+   var dropdwn=document.getElementById('dd');
+
+for(i=0;i<course.length;i++)
+{
+ var ele=document.createElement('option');
+  ele.text=course[i];
+dropdwn.add(ele,i+1)
+}
+}
+
+function conformpasss(){
+	var pass= document.getElementById("pass").value
+	var conpass=document.getElementById("cpass").value
+	if(pass!=conpass){
+		alert('wrong conform password !');
+		return false;
+	}
+	else{
+		alert('match password');
+	}
+}
+
+
+</script>
+</head>
+<body>
+	<center>
+<h1>REGISTATION FORM</h1>
+<ol>
+	
+EMPLOYEE NAME &nbsp&nbsp<input type="text" id="mytxt" onkeypress ="test(event)">
+
+<br>
+DOB <input type="date" name="test" id="dob" max="2003-01-01">
+ <br>
+QUALIFICATION:
+<select>
+<option>graduation</option>
+	<option>post graduation</option>
+</select>
+	<body onload="filldd()">
+<select id="dd">
+<option>select course</option>
+</select>
+<br>
+ <form action="" id="form" method="post">
+EMAIL ID<input type="email" id="email" class="text"><br>
+PASSWORD &nbsp&nbsp <input type="password" id="pass" class="text"><br>
+CONFORM PASSWORD &nbsp&nbsp <input type="password" id="cpass" class="text" ><br>
+	<input type="submit" onclick ="conformpasss()"><br>
+	
+</form>
+ 
+</center>
+</body>
+</html>
