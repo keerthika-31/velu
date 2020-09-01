@@ -1,0 +1,623 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Insert title here</title>
+</head>
+
+<body style="background-color:skyblue;">
+<form action="markattendance">
+
+
+<center>
+<h1 style="color:red;"> Mark Attendance </h1>
+<h2 style="color:White;">Select Semester :</h2>
+
+<div  style="width:200px;">
+<select name="sem">
+<option > Select Sem</option>
+<option value="1"> Sem 1 </option>
+<option value="2"> Sem 2 </option>
+<option value="3"> Sem 3 </option>
+<option value="4"> Sem 4 </option>
+<option value="5"> Sem 5 </option>
+<option value="6"> Sem 6 </option>
+</div>
+
+</select>
+</br></br>
+
+<input type="submit" value="Mark attendance" style="color:green;">
+</center>
+
+</form>
+
+</body>
+</html>
+--------------------------------------------------------------------------------------------
+package com.assement.servlet;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import com.assement.dbutil.DbConnection;
+import com.assement.model.Student;
+
+@WebServlet("/markattendance")
+public class markattendance extends HttpServlet {
+
+	private final String GET_STUDENT_SEM ="select * from student where sem=?";
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		
+		Connection con = null;
+		PreparedStatement psmt = null;
+		ResultSet rs = null;
+		List<Student> students = null;
+		
+		
+		int semId = Integer.parseInt(request.getParameter("sem"));
+		
+		PrintWriter out = response.getWriter();
+		out.print("<h1> SemId : "+semId+" </h1>");
+		try {
+			con = DbConnection.getConnect();
+			psmt = con.prepareStatement(GET_STUDENT_SEM);
+			psmt.setInt(1, semId);
+			rs = psmt.executeQuery();
+			
+			students = new ArrayList<Student>();
+			while(rs.next()) {
+				Student std = new Student(rs.getInt("SID"), rs.getNString("SNAME"), rs.getInt("SEM"));
+				students.add(std);
+			}
+			
+			request.setAttribute("students", students);
+			
+			HttpSession session=request.getSession();
+			session.setAttribute("students", students);
+			System.out.println(students);
+			 RequestDispatcher dispatcher = request.getRequestDispatcher("studid.jsp");
+	         dispatcher.forward(request, response);
+	         
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+}
+----------------------------------------------------------------------------------------------------------
+package com.assement.model;
+
+public class Student {
+
+	protected int sid;
+	protected String sname;
+	protected int sem;
+	
+	
+	public Student(int sid, String sname, int sem, String branch) {
+		super();
+		this.sid = sid;
+		this.sname = sname;
+		this.sem = sem;
+		
+	}
+
+	public int getSid() {
+		return sid;
+	}
+
+	public void setSid(int sid) {
+		this.sid = sid;
+	}
+
+	public String getSname() {
+		return sname;
+	}
+
+	public void setSname(String sname) {
+		this.sname = sname;
+	}
+
+	public int getSem() {
+		return sem;
+	}
+
+	public void setSem(int sem) {
+		this.sem = sem;
+	}
+
+
+
+	@Override
+	public String toString() {
+		return "Student [sid=" + sid + ", sname=" + sname + ", sem=" + sem + "]";
+	}
+	public Student() {	
+	}
+	
+
+}
+----------------------------------------------------------------------------------------------------------
+package com.assement.dbutil;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class DbConnection {
+	public static Connection getConnect()
+	{
+	try
+	{
+
+	Class.forName("oracle.jdbc.OracleDriver");
+	Connection con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "dxcfs", "pass");
+
+	return con;
+	}
+	catch (Exception e) {
+	// TODO: handle exception
+	e.printStackTrace();
+	}
+
+	return null;
+
+}
+}
+-------------------------------------------------------------------------------------------------------------
+
+package com.assement.model;
+import java.sql.Date;
+
+public class Attendancestat {
+
+	protected int sid;
+	protected String sname;
+	protected int sem;
+	protected Date dateodate;
+	protected String attendance;
+	public int getSid() {
+		return sid;
+	}
+	public void setSid(int sid) {
+		this.sid = sid;
+	}
+	public String getSname() {
+		return sname;
+	}
+	public void setSname(String sname) {
+		this.sname = sname;
+	}
+	public int getSem() {
+		return sem;
+	}
+	public void setSem(int sem) {
+		this.sem = sem;
+	}
+	public Date getDateodate() {
+		return dateodate;
+	}
+	public void setDateodate(Date dateodate) {
+		this.dateodate = dateodate;
+	}
+	public String getAttendance() {
+		return attendance;
+	}
+	public void setAttendance(String attendance) {
+		this.attendance = attendance;
+	}
+	public Attendancestat(int sid, String sname, int sem, Date dateodate, String attendance) {
+		super();
+		this.sid = sid;
+		this.sname = sname;
+		this.sem = sem;
+		this.dateodate = dateodate;
+		this.attendance = attendance;
+	}
+	@Override
+	public String toString() {
+		return "Attendancestat [sid=" + sid + ", sname=" + sname + ", sem=" + sem + ", dateodate=" + dateodate
+				+ ", attendance=" + attendance + "]";
+	}
+
+}
+-----------------------------------------------------------------------------------------------------------------
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+
+</head>
+<body background="nature.jfif" >
+<center>
+<h2 style="color:White;"> Seme Students </h2></center>
+	<form action="saveStudent" >
+		<table align="center"  cellspacing="5" cellpadding="0">
+
+			<c:forEach var="students" items="${students}">
+				<tr>
+					<td style="color:White;">${students.sid}</td>
+					<td style="color:White;">${students.sname}</td>
+					<td></td>
+					<td><input type='checkbox' name='state' value='${students.sid}'></td>
+				</tr>
+			</c:forEach>
+		</table>
+		<br>
+		<center><input  type="submit" value="SUBMIT"></center>
+	</form>
+</body>
+</html>
+----------------------------------------------------------------------------------------------------------------
+package com.assement.servlet;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.SQLException;
+import java.sql.Date;
+import java.util.List;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import com.assement.dao.SaveStudentDao;
+import com.assement.model.Student;
+import com.assement.model.Attendancestat;
+
+@WebServlet("/saveStudent")
+public class saveStudent extends HttpServlet {
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		PrintWriter out = response.getWriter();
+
+		
+		List<Student> students = null;
+
+		Attendancestat sta = null;
+		long d = System.currentTimeMillis();
+		Date date = new Date(d);
+
+		String[] names = request.getParameterValues("state");
+		HttpSession session = request.getSession();
+
+		if (session != null) {
+			students = (List<Student>) session.getAttribute("students");
+		}
+
+		for (Student s : students) {
+			sta = new Attendancestat(s.getSid(), s.getSname(), s.getSem(), date, "ABSENT");
+			try {
+				SaveStudentDao.saveStudent(sta);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		for (String n : names) {
+			int sids = Integer.parseInt(n);
+			try {
+				int result = SaveStudentDao.updateStudent(sids);
+				System.out.println("No of roes aff : " + result);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		
+
+		RequestDispatcher rd = request.getRequestDispatcher("Attendance.jsp");
+		rd.forward(request, response);
+	}
+
+}
+----------------------------------------------------------------------------------------------------------------
+package com.assement.dao;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.assement.model.Student;
+import com.assement.model.Attendancestat;
+
+public class SaveStudentDao {
+	private static final String UPDATE_STUDENT_ATT = "update Attendance set Attendance='PRESENT' where sid=?";
+
+	public static int saveStudent(StudentStatus std) throws SQLException {
+		List<Student> listStudent = new ArrayList<>();
+		int noOfRowsAff = 0;
+		try (Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "dxcfs", "pass")) {
+			String sql = "insert into Attendance(sid,sname,sem,dateodate,attendance) values(?,?,?,?,?)";
+			PreparedStatement psmt = con.prepareStatement(sql);
+			psmt.setInt(1, std.getSid());
+			psmt.setString(2, std.getSname());
+			psmt.setInt(3, std.getSem());
+			psmt.setDate(4, std.getDateodate());
+			psmt.setNString(5, std.getAttendance());
+
+			noOfRowsAff = psmt.executeUpdate();
+
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw ex;
+		}
+		return noOfRowsAff;
+	}
+
+	public static int updateStudent(int id) throws SQLException {
+		Connection con = DriverManager.getConnect("jdbc:oracle:thin:@localhost:1521:xe", "dxcfs", "pass");
+		PreparedStatement psmt = con.prepareStatement(UPDATE_STUDENT_ATT);
+		psmt.setInt(1, id);
+		int rowsAffect = psmt.executeUpdate();
+
+		return rowsAffect;
+	}
+
+}
+=====================================---------------------------------------------------------------------
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta charset="utf-8" />
+
+<title>jQuery Datepicker: Disable Future Dates</title>
+
+
+<link rel="stylesheet"
+	href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css" />
+<script src="http://code.jquery.com/jquery-1.8.2.js"></script>
+<script src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
+<script type="text/javascript">
+	$(function() {
+		var date = new Date();
+		var currentMonth = date.getMonth();
+		var currentDate = date.getDate();
+		var currentYear = date.getFullYear();
+		$('#datepicker').datepicker({
+			maxDate : new Date(currentYear, currentMonth, currentDate)
+		});
+	});
+</script>
+
+</head>
+
+<body >
+<center>
+<body background="first.jpg">
+<h1 style="color:white;"> Select Sem And Date To Display Attendance Status</h1>
+	<form action="Attendshow">
+		Select Semester : <select name="sem">
+			<option>Select</option>
+			<option value="1">Sem 1</option>
+			<option value="2">Sem 2</option>
+			<option value="3">Sem 3</option>
+			<option value="4">Sem 4</option>
+			<option value="5">Sem 5</option>
+			<option value="6">Sem 6</option>
+		</select>
+
+		<p>
+			Date: <input type="text" id="datepicker" name="date" />
+		</p>
+		<input type="submit" value="Mark attendance">
+
+
+	</form>
+</center>
+</body>
+</html>
+-----------------------------------------------------------------------------------------------------------------
+package com.assement.servlet;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Date;
+import java.sql.SQLException;
+import java.util.List;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.assement.dao.DisplayAtt;
+import com.assement.model.Attendancestat;
+
+@WebServlet("/Attendshow")
+public class Attendshow extends HttpServlet {
+	private final String GET_STUDENT_SEM = "select * from Attendance where sem=?";
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		int sem = 0;
+		List<Attendance> studentsAtt = null;
+		PrintWriter out = null;
+
+		out = response.getWriter();
+
+		sem = Integer.parseInt(request.getParameter("sem"));
+		String sdate = request.getParameter("date").replace('/', '-');
+		System.out.println("sdate :  "+sdate);
+		long d = System.currentTimeMillis();
+		Date date = new Date(d);
+		
+		try {
+			studentsAtt = DisplayAtt.getAttendance(sem, date);
+			System.out.print(studentsAtt);
+			request.setAttribute("studentsAtt", studentsAtt);
+			
+			RequestDispatcher rd = request.getRequestDispatcher("Disp.jsp");
+			rd.forward(request, response);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+}
+-------------------------------------------------------------------------------------------------------------
+package com.assement.dao;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.assement.model.Attendancestat;
+
+public class DisplayAtt {
+	
+	private static final String GET_STUDENT_ATTE = "select * from Attendance where sem =? AND dateodate=?";
+	
+	public static List<Attendance> getAttendance(int sem,Date date) throws SQLException{
+		List<StudentStatus> students = null;
+		StudentStatus std = null;
+		
+		Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:xe", "dxcfs", "pass");
+            PreparedStatement psmt=con.prepareStatement(GET_STUDENT_ATTE);
+            psmt.setInt(1, sem);
+            psmt.setDate(2, date);
+            
+            ResultSet rs = psmt.executeQuery();
+            
+            students = new ArrayList<Attendance>();
+            while(rs.next()) {
+            	std = new Attendancestat(rs.getInt(1), rs.getString(2), rs.getInt(3), rs.getDate(4), rs.getString(5));
+            	students.add(std);
+            }
+            
+		return students;
+	}
+
+}
+--------------------------------------------------------------------------------------------------------------
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="ISO-8859-1">
+
+<title>Attendence JSP</title>
+</head>
+
+<body style="background-color:powder blue;">
+
+	<form action="saveStudent" >
+		<table align=" center" cellspacing="5" cellpadding="0"> 
+	  
+			<c:forEach var="studentsatt" items="${studentsAtt}">
+			<center>
+				<tr > 
+				
+				 
+					<td>${studentsatt.sname}</td>
+					<td>${studentsatt.sid}</td>
+					<td>${studentsatt.sem}</td>
+					<td>${studentsatt.dateodate}</td>
+					<td>${studentsatt.attendance}</td>
+					<td></td>
+				 
+				</tr>
+			</center>
+			</c:forEach>
+		
+		</table>
+		
+          
+    
+	</form>
+
+	
+</body>
+</html>
+---------------------------------------------------------------------------------------------------------------
+create table student(
+sid int,
+sname varchar(20),
+sem int,
+);
+
+
+
+insert into student values('1','kavi','1');
+insert into student values('2','kayal','1');
+insert into student values('3','rashma','1');
+insert into student values('4','oviya','1');
+insert into student values('5','payal','2');
+insert into student values('6','kavin','2');
+insert into student values('7','jestin','2');
+insert into student values('8','jeeva','2');
+insert into student values('9','sugi','3');
+insert into student values('10','naresh','3');
+insert into student values('11','mahi','3');
+insert into student values('12','mahesh','3');
+insert into student values('13','krish','4');
+insert into student values('14','arjun','4');
+insert into student values('15','bheem','4');
+insert into student values('125','dev','4');
+insert into student values('16','jack','5');
+insert into student values('17','mark','5');
+insert into student values('18','rosy','5');
+insert into student values('19','bean','5');
+insert into student values('20','manav','6');
+insert into student values('21','sahil','6');
+insert into student values('22','vishal','6');
+insert into student values('23','deppa','6');
+
+
+
+
+
+
+create table Attendance(
+sid int,
+sname varchar(20),
+sem int,
+dateOfAtt date,
+attendance varchar(20)
+);
