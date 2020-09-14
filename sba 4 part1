@@ -1,0 +1,612 @@
+========home controller======
+package com.myspr.demo;
+
+import java.text.DateFormat;
+
+
+
+import java.util.Date;
+import java.util.Locale;
+
+import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+
+import com.myspr.demo.dao.FacultyDao;
+import com.myspr.demo.model.Faculty;
+
+@Controller
+public class HomeController {
+
+@Autowired
+FacultyDao dao;
+
+
+
+@RequestMapping(value="/")
+public String home(Model model)
+{
+	System.out.println("service is up");
+return "home";
+}
+
+
+	
+	  @RequestMapping(value="/display") 
+	  public String display(Model model,@ModelAttribute Faculty faculty) {
+		  String status=dao.saveFaculty(faculty); 
+		  model.addAttribute("status",status); 
+		  return "display"; 
+		  }
+	 
+
+	
+	
+	
+	  @RequestMapping(value="/disp")
+	  public String value(Model model,@RequestParam("dept") String dept) {
+		  Faculty faculty=dao.searchdept(dept); 
+		  model.addAttribute("faculty",faculty);
+		  return "dispsearch";
+		  }
+	 
+
+
+	
+	
+	
+	  @RequestMapping(value="/disp1") 
+	  public String value1(Model model,@RequestParam("facultyName") String facultyName) {
+	  Faculty faculty=dao.searchname(facultyName); 
+	  model.addAttribute("faculty",faculty);
+	  return "dispname"; 
+	  }
+	 
+
+	
+	  @RequestMapping(value="/disp2")
+	  public String value2(Model model,@RequestParam("facultyName") String facultyName) 
+	  {
+		  String status=dao.deletefacultyName(facultyName); 
+		  model.addAttribute("status",status); 
+		  return "display"; 
+		  }
+				 
+
+
+
+	
+	  @RequestMapping(value="/update") 
+	  public String update() {
+		  return "update"; 
+		  }
+	  
+	  
+	  int facultyId=0;
+	  
+	  @RequestMapping(value="/searchForUpdate")
+	  public String searchForUpdate(Model model,@RequestParam("facultyId") Integer facultyId) { 
+		  int facuId=facultyId;
+		  this.facultyId=facuId; 
+		  Faculty author=dao.getFacultyById(facuId);
+	  model.addAttribute(author);
+	  return "update"; 
+	  }
+	  
+	  
+	  @RequestMapping(value="/updateData") 
+	  public String updateData(@ModelAttribute Faculty faculty) { 
+		  faculty.setFacultyId(facultyId);
+	  
+	  dao.updateFacultyById(faculty);
+	  return "update"; 
+	  }
+	 
+}
+====================dao
+package com.myspr.demo.dao;
+
+import javax.transaction.Transactional;
+
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.myspr.demo.model.Faculty;
+
+    
+	
+	@Transactional
+	public class FacultyDao {
+
+
+	@Autowired
+	SessionFactory factory;
+
+
+	public FacultyDao() {
+	// TODO Auto-generated constructor stub
+	}
+
+
+	public FacultyDao(SessionFactory factory) {
+	super();
+	this.factory = factory;
+	}
+
+
+	public String saveFaculty(Faculty faculty){
+	try{
+	Session session=factory.getCurrentSession();
+	session.save(faculty);
+	return "faculty Created";
+	}
+	catch (Exception e) {
+	// TODO: handle exception
+	e.printStackTrace();
+	}
+
+	return "cannot create faculty";
+	}
+
+	public Faculty searchdept(String dept) {
+		try {
+			Session session=factory.getCurrentSession();
+			Query query=session.createQuery("from Faculty d where d.dept=:dept");
+			query.setParameter("dept",dept);
+			Faculty faculty=(Faculty)query.list().get(0);
+			return faculty;
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+
+	public Faculty searchname(String facultyName) {
+		try {
+			Session session=factory.getCurrentSession();
+			Query query=session.createQuery("from Faculty a where a.facultyName=:facultyName");
+			query.setParameter("facultyName",facultyName);
+			Faculty faculty=(Faculty)query.list().get(0);
+			return faculty;
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+
+	public  String deletefacultyName(String facultyName) {
+		try {
+			Session session=factory.getCurrentSession();
+			Query query=session.createQuery(" delete from Faculty a where a.facultyName=:facultyName");
+			query.setParameter("facultyName",facultyName);
+			int count=query.executeUpdate();
+			if(count>0)
+			{
+				return "deleted";
+				
+			}
+		
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return "not deleted";
+	}
+
+
+
+	
+	public Faculty getFacultyById(int facultyId){
+		try{
+		Session session=factory.getCurrentSession();
+		Faculty faculty=(Faculty)session.get(Faculty.class,facultyId);
+		return faculty;
+		}
+		catch (Exception e) {
+		// TODO: handle exception
+		e.printStackTrace();
+		}
+
+		return null;
+		}
+
+
+
+		public String updateFacultyById(Faculty faculty){
+		try{
+		Session session=factory.getCurrentSession();
+
+		System.out.println("faculty "+faculty);
+		session.update("Faculty",faculty);
+		return "Faculty Updated";
+		}
+		catch (Exception e) {
+		// TODO: handle exception
+		e.printStackTrace();
+		}
+
+		return "Cannot Update faculty";
+		}
+
+	}
+===========faculty======
+package com.myspr.demo.model;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class Faculty {
+	
+	@Id
+	int facultyId;
+	String facultyName;
+	String dept;
+	String clgname;
+	public int getFacultyId() {
+		return facultyId;
+	}
+	public void setFacultyId(int facultyId) {
+		this.facultyId = facultyId;
+	}
+	public String getFacultyName() {
+		return facultyName;
+	}
+	public void setFacultyName(String facultyName) {
+		this.facultyName = facultyName;
+	}
+	public String getDept() {
+		return dept;
+	}
+	public void setDept(String dept) {
+		this.dept = dept;
+	}
+	public String getClgname() {
+		return clgname;
+	}
+	public void setClgname(String clgname) {
+		this.clgname = clgname;
+	}
+	public Faculty(int facultyId, String facultyName, String dept, String clgname) {
+		super();
+		this.facultyId = facultyId;
+		this.facultyName = facultyName;
+		this.dept = dept;
+		this.clgname = clgname;
+	}
+	@Override
+	public String toString() {
+		return "Faculty [facultyId=" + facultyId + ", facultyName=" + facultyName + ", dept=" + dept + ", clgname="
+				+ clgname + "]";
+	}
+	
+	public Faculty() {
+		// TODO Auto-generated constructor stub
+	}
+	
+	
+
+}
+==================display
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page session="false" %>
+<html>
+<head>
+<link href="<c:url value="/resources/css/style.css"/>"rel="stylesheet">
+<title>Home</title>
+</head>
+<body>
+<h1>
+Hello world!  
+</h1>
+<P>  ${status} </P>
+
+</body>
+</html>
+
+
+=============dispnmae
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page session="false" %>
+<html>
+<head>
+<link href="<c:url value="/resources/css/style.css"/>"rel="stylesheet">
+<title>Home</title>
+</head>
+<body>
+<h1>
+Hello world!  
+</h1>
+<table>
+<P> FACULTYID: ${faculty.facultyId} </P>
+<P> FACULTYNAME: ${faculty.facultyName} </P>
+<P> DEPARTMENT: ${faculty.dept} </P>
+<P> COLLEGENAME: ${faculty.clgname} </P>
+</table>
+</body>
+</html>
+
+============dispsearch
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page session="false" %>
+<html>
+<head>
+<link href="<c:url value="/resources/css/style.css"/>"rel="stylesheet">
+<title>Home</title>
+</head>
+<body>
+<h1>
+Hello world!  
+</h1>
+<table>
+<P> FACULTYID: ${faculty.facultyId} </P>
+<P> FACULTYNAME: ${faculty.facultyName} </P>
+<P> DEPARTMENT: ${faculty.dept} </P>
+<P> COLLEGENAME: ${faculty.clgname} </P>
+</table>
+</body>
+</html>
+
+
+=============update<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page session="false" %>
+<html>
+<head>
+<style >
+body {
+  background-color: lightblue;
+}
+
+h1 {
+  color: chocolate;
+  text-align: center;
+}
+
+p {
+  font-family: verdana;
+  font-size: 20px;
+}
+</style>
+<title>Update</title>
+</head>
+<body>
+<h1>
+Hello Faculty PLz Update ur Details!  
+</h1>
+<form action="searchForUpdate">
+<center>
+Id:<input type="text" name="facultyId" value="${faculty.facultyId}">
+<input type="submit" value="search">
+</form>
+
+<br>
+<br>
+<form action="updateData">
+Name:<input type="text" name="facultyName" value="${faculty.facultyName}">
+<br>
+<br>
+dept: <input type="text" name="dept" value="${faculty.dept}">
+<br>
+<br>
+clgname: <input type="text" name="clgname" value="${faculty.clgname}">
+<br>
+<br>
+<input type="submit" value="update faculty">
+</form>
+</center>
+
+</body>
+</html>
+
+===========home
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page session="false" %>
+<html>
+<head>
+<style >
+body {
+  background-color: lightblue;
+}
+
+h1 {
+  color: red;
+  text-align: center;
+}
+
+p {
+  font-family: verdana;
+  font-size: 20px;
+}
+
+form{
+margin:60px;
+margin-top:15px;
+}
+form label{
+display: block;
+margin:10px 0px;
+}
+
+</style>
+
+<title>Home</title>
+</head>
+<body>
+<%-- <link href="<c:url value="/resources/css/style.css"/>"rel="stylesheet"> --%>
+<center>
+ <img src="${pageContext.request.contextPath}/resources/img/faculty.jfif" style="height:60%;width:80%;">
+ </center>
+<h1>
+<center> 
+Hello Faculty PLz Provide ur Details!  
+</center>
+</h1>
+<form action="display">
+<center>
+<br>
+<br>
+Id      :<input type="text" name="facultyId">
+<br>
+<br>
+Name    : <input type="text" name="facultyName">
+<br>
+<br>
+Dept    : <input type="text" name="dept">
+<br>
+<br>
+clgName : <input type="text" name="clgname">
+<br>
+<br>
+
+<input type="submit" name="save faculty">
+
+</form>
+
+<form action="update">
+<input type="submit" value="Update">
+</form>
+
+
+<br>
+<br>
+Hello faculty PLz Provide ur dept name to search!  
+</h1>
+<form action="disp">
+
+Name:<input type="text" name="dept">
+
+<br>
+<input type="submit" name="search">
+</form>
+
+<br>
+<br>
+
+
+Hello faculty PLz Provide ur facultyName to search!  
+</h1>
+<form action="disp1">
+
+Name:<input type="text" name="facultyName">
+
+<br>
+<input type="submit" name="search">
+</form>
+
+<br>
+<br>
+
+
+Hello faculty PLz Provide ur Details to delete!  
+</h1>
+<form action="disp2">
+
+facultyname:<input type="text" name="facultyName">
+<br>
+
+<input type="submit" name="delete">
+</form>
+<br>
+</center>
+</body>
+</html>
+============hibernate cfg.xml
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>        
+  <session-factory>
+    <property name="hibernate.dialect">org.hibernate.dialect.OracleDialect</property>
+    <property name="show_sql">true</property>
+    <property name="hibernate.connection.pool_size">1</property>
+    <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+    <property name="hbm2ddl.auto">update</property>
+
+    <mapping class="com.myspr.demo.model.Faculty"/>
+
+  </session-factory>
+</hibernate-configuration>
+====================================servelt.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:mvc="http://www.springframework.org/schema/mvc"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://www.springframework.org/schema/beans"
+xmlns:context="http://www.springframework.org/schema/context"
+xmlns:tx="http://www.springframework.org/schema/tx"
+xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+
+<!-- Enables the Spring MVC @Controller programming model -->
+<mvc:annotation-driven />
+
+<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+<mvc:resources mapping="/resources/**" location="/resources/" />
+
+<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+<property name="prefix" value="/WEB-INF/views/" />
+<property name="suffix" value=".jsp" />
+</bean>
+
+<context:component-scan base-package="com.myspr.demo" />
+
+
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@127.0.0.1:1521:xe"/>
+        <property name="username" value="dxcfs"/>
+        <property name="password" value="pass"/>
+    </bean>
+   
+    <bean id="sessionFactory"
+        class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+<property name="configLocation" value="classpath:hibernate.cfg.xml" />
+    </bean>
+   
+    <tx:annotation-driven />
+
+    <bean id="transactionManager"
+        class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+ 
+<bean id="facultyDao" class="com.myspr.demo.dao.FacultyDao">
+   <constructor-arg>
+       <ref bean="sessionFactory" />
+   </constructor-arg>
+</bean>    
+</beans>
+
+
+
+
+
+
+
+
