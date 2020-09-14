@@ -1,0 +1,118 @@
+package com.product.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Date;
+
+import com.product.dbutil.DbutilConnection;
+import com.product.demo.Product;
+
+public class displayPro {
+	public ArrayList<Product> getAllProducts()
+	{
+		try {
+			Connection con=DbutilConnection.getconnect();
+			String sql="select * from products";
+			PreparedStatement stat=con.prepareStatement(sql);
+			ResultSet rs=stat.executeQuery();
+			ArrayList<Product> productList=new ArrayList<>();
+			while(rs.next())
+			{
+			int prodId=rs.getInt("prod_Id");
+			String prodName= rs.getString("prod_name");
+			float prodPrice= rs.getFloat("prod_price");
+			Date mfd= rs.getDate("mfd");
+			String colour= rs.getString("colour");
+			Date expDate=rs.getDate("exp_date");
+
+			Product product=new Product(prodId, prodName, prodPrice, mfd, colour, expDate);
+
+			productList.add(product);
+
+			}
+
+			return productList;
+			
+				
+		} catch (Exception e) {
+			// TODO: handl
+From bharadwaja oguri to Everyone:  03:38 AM
+package com.product.dao;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
+import com.product.dbutil.DbutilConnection;
+
+public class deletePro {
+
+	public String deleteProduct(int prod_Id)
+	{
+		try {
+			Connection connection=DbutilConnection.getconnect();
+			String sql="delete from products where prod_Id=?";
+			PreparedStatement stat=connection.prepareStatement(sql);
+			stat.setInt(1,prod_Id);
+			int res=stat.executeUpdate();
+			if(res>0)
+				return "done delete";
+			else
+				return "not done";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "exception"+e;
+		}	
+	}
+}
+=================
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.product.dao.deletePro;
+
+@WebServlet("/deleteserv")
+public class deleteserv extends
+From bharadwaja oguri to Everyone:  03:39 AM
+
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.product.dao.deletePro;
+
+@WebServlet("/deleteserv")
+public class deleteserv extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+  
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+int prodId = Integer.parseInt(request.getParameter("prodId"));
+PrintWriter out= response.getWriter();
+response.setContentType("text/html");
+deletePro dao=new deletePro();
+out.print(dao.deleteProduct(prodId));
+		out.print("done delete");
+
+	}
+}
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+"select * from products where pname like '%"+productName+ "%'";
+

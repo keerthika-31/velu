@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:context="http://www.springframework.org/schema/context"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+
+<bean id="student" class="com.myspr.demp.Student">
+<constructor-arg  index="0" type="int" value="20"></constructor-arg>
+<constructor-arg  value="1000"></constructor-arg>
+<constructor-arg ref="address"></constructor-arg>
+</bean>
+<bean id="address" class="com.myspr.demp.Address">
+<property name="state" value="karnataka"></property>
+<property name="city" value="bijapur"></property>
+</bean>
+
+
+
+<context:annotation-config/>
+</beans>
+-------------------------------------------------------------------------------------
+package com.myspr.demp;
+
+public class Student {
+
+private int rollNo;
+private String name;
+
+private Address address;
+
+/*public Student(int rollNo, String name, Address address) {
+super();
+this.rollNo = rollNo;
+this.name = name;
+this.address = address;
+}*/
+public Address getAddress() {
+return address;
+}
+public void setAddress(Address address) {
+this.address = address;
+}
+public int getRollNo() {
+return rollNo;
+}
+public void setRollNo(int rollNo) {
+this.rollNo = rollNo;
+}
+public String getName() {
+return name;
+}
+public void setName(String name) {
+this.name = name;
+}
+
+
+
+//c1
+public Student( String name,int rollNo) {
+super();
+this.rollNo = rollNo;
+this.name = name;
+System.out.println("String name , int roll No");
+System.out.println("c1");
+
+}
+
+//c2
+public Student(int rollNo, String name) {
+super();
+this.rollNo = rollNo;
+this.name = name;
+System.out.println("int roll No, String name , ");
+System.out.println("c2");
+
+}
+
+@Override
+public String toString() {
+return "Student [rollNo=" + rollNo + ", name=" + name + ", address=" + address + "]";
+}
+public Student() {
+// TODO Auto-generated constructor stub
+}
+
+}
+---------------------------------------------------------------------
+package com.myspr.service;
+
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.FileSystemResource;
+
+
+import com.myspr.demp.Student;
+
+public class StudentService {
+	
+	public static void main(String[] args) {
+
+		/*Student student=new Student();
+		System.out.println(student.getName());
+		*/
+
+		BeanFactory factory=new ClassPathXmlApplicationContext("spring.xml");
+		Student student=(Student)factory.getBean("student");
+		System.out.println(student);
+
+
+		/* Address addr=new Address("bang", "kar");
+		Student stud=new Student(11,"aaa");
+
+		stud.setAddress(addr);
+
+		System.out.println(stud);
+		*/
+		}
+
+		}
+
+
+------------------------------------------------------------
+package com.myspr.demp;
+
+public class Address {
+	
+	String city;
+	String state;
+	public String getCity() {
+	return city;
+	}
+	public void setCity(String city) {
+	this.city = city;
+	}
+	public String getState() {
+	return state;
+	}
+	public void setState(String state) {
+	this.state = state;
+	}
+	public Address(String city, String state) {
+	super();
+	this.city = city;
+	this.state = state;
+	}
+	@Override
+	public String toString() {
+	return "Address [city=" + city + ", state=" + state + "]";
+	}
+	public Address() {
+	// TODO Auto-generated constructor stub
+	}
+
+}

@@ -1,0 +1,38 @@
+create  table player (
+fname varchar(20),
+lname varchar(20),
+player_id varchar(30),
+dob Date,
+game varchar(50),
+location varchar(50)
+);
+-----------------
+ create sequence s
+minvalue 1
+select 
+row_no() over(order by x.fname(2) + y.lname(2) + z.no)s id,
+convert(nchar(4),x.fname(2) + y.lname(2) + z.no)s result
+from
+(
+values
+
+)x(fname),
+(
+values
+
+)()
+(
+values
+
+)()
+where
+not (not x.fname and y.lname between '1' and '9' and z.no='0')
+)
+increament by 1;
+
+
+
+
+
+
+select result from s where id=(select id + 1 from seq )

@@ -1,0 +1,129 @@
+package assignment2;
+
+public class carmodel  implements Comparable<carmodel>{
+	private String carname;
+	int manuyear;
+	public String getCarname() {
+		return carname;
+	}
+	public void setCarname(String carname) {
+		this.carname = carname;
+	}
+	public int getManuyear() {
+		return manuyear;
+	}
+	public void setManuyear(int manuyear) {
+		this.manuyear = manuyear;
+	}
+	public carmodel(String carname, int manuyear) {
+		super();
+		this.carname = carname;
+		this.manuyear = manuyear;
+	}
+	@Override
+	public String toString() {
+		return "carmodel [carname=" + carname + ", manuyear=" + manuyear + "]";
+	}
+	public carmodel(){
+
+}
+	@Override
+	public int compareTo(carmodel o) {
+		// TODO Auto-generated method stub
+		return o.manuyear-this.manuyear;
+	}
+}
+
+------------------------------------------------------------------------------------------------------------------
+package assignment2;
+
+import java.util.List;
+
+public class showroom {
+	private String showroomname;
+	private int address;
+	List<carmodel>carmodels;
+		
+	
+	public String getShowroomname() {
+		return showroomname;
+	}
+
+
+	public void setShowroomname(String showroomname) {
+		this.showroomname = showroomname;
+	}
+
+
+	public int getAddress() {
+		return address;
+	}
+
+
+	public void setAddress(int address) {
+		this.address = address;
+	}
+
+
+	public List<carmodel> getCarmodels() {
+		return carmodels;
+	}
+
+
+	public void setCarmodels(List<carmodel> carmodels) {
+		this.carmodels = carmodels;
+	}
+
+
+	public showroom(String showroomname, int address, List<carmodel> carmodels) {
+		super();
+		this.showroomname = showroomname;
+		this.address = address;
+		this.carmodels = carmodels;
+	}
+
+
+	@Override
+	public String toString() {
+		return "showroom [showroomname=" + showroomname + ", address=" + address + ", carmodels=" + carmodels + "]";
+	}
+
+
+	public showroom() {
+		
+	}
+	
+
+}
+----------------------------------------------------------------------------------------------------------------
+package assignment2;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
+public class sortmanuyr {
+	public static void main(String[] args) {
+		java.util.List<carmodel>carmodels=new  ArrayList<carmodel>();
+		carmodel c1=new carmodel("benz",1990);
+		carmodel c2=new carmodel("maruthi",1994);
+		carmodel c3=new carmodel("audi",1983);
+		carmodel c4=new carmodel("swift",1999);
+		
+		
+		carmodels.add(c1);
+		carmodels.add(c2);
+		carmodels.add(c3);
+		carmodels.add(c4);
+		
+		Collections.sort(carmodels);
+		for(carmodel car:carmodels)
+
+		{
+			System.out.println(car);
+		}
+		
+		
+	}
+
+}

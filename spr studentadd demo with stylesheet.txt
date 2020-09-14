@@ -1,0 +1,271 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page session="false" %>
+<html>
+<head>
+<title>Home</title>
+</head>
+<link href="<c:url value="/resources/css/style.css"/>"rel="stylesheet">
+<body>
+<h1>
+Hello User !  
+</h1>
+
+<form action="display">
+
+Student Name: <input type="text" name="name">
+<br>
+Student Id: <input type="text" name="studentId">
+<br>
+
+Student Sem: <input type="text" name="sem">
+<br>
+
+
+Preffered Location :
+<select name="plocation" multiple="multiple">
+<option>Bangalore</option>
+<option>Mumbai</option>
+<option>Delhi</option>
+</select>
+<br>
+
+DOB: <input type="date" name="studentDob">
+<br>
+
+City: <input type="text" name="address.city">
+
+
+State: <input type="text" name="address.state">
+
+
+<input type="submit">
+</form>
+
+
+</body>
+</html>
+
+---------------------------------------------------------------------------------------------------
+package com.spr.spr;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.spr.spr.bean.Student;
+
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+
+@Controller
+public class HomeController {
+
+
+@InitBinder
+public void initBinder(WebDataBinder binder) {
+
+//YYYY/MM/DD
+SimpleDateFormat df=new SimpleDateFormat("yyyy-MM-dd");
+binder.registerCustomEditor(Date.class, new CustomDateEditor(df, false));
+
+}
+
+
+@RequestMapping(value = "/")
+public String home() {
+return "home";
+}
+
+
+@RequestMapping(value="display")
+public String myMeth2(@ModelAttribute Student student)
+{
+
+return "design";
+}
+
+}
+
+-------------------------------------
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page session="false" %>
+<html>
+<head>
+<title>Home</title>
+</head>
+<body>
+<h1>
+
+Welcome to Spring MVC
+</h1>
+
+<P>Name : ${student.name}</P>
+<P>Student Id : ${student.studentId}</P>
+<P>Address : ${student.address}</P>
+<P>Sem : ${student.sem}</P>
+
+<P>Sem : ${student.studentDob}</P>
+
+
+<P>Sem : ${student.address.city}</P>
+
+<P>Sem : ${student.address.state}</P>
+
+
+prefered Location
+<c:forEach items="${student.plocation}" var="loc">
+
+${loc},
+</c:forEach>
+
+</body>
+</html>
+-----------------------
+package com.spr.spr.bean;
+
+import java.util.Date;
+
+public class Student {
+	String name;
+	String studentId;
+	Address address;
+	int sem;
+	String[] plocation;
+
+	Date studentDob;
+
+
+
+
+	public Date getStudentDob() {
+	return studentDob;
+	}
+	public void setStudentDob(Date studentDob) {
+	this.studentDob = studentDob;
+	}
+	public String[] getPlocation() {
+	return plocation;
+	}
+	public void setPlocation(String[] plocation) {
+	this.plocation = plocation;
+	}
+	public String getName() {
+	return name;
+	}
+	public void setName(String name) {
+	this.name = name;
+	}
+	public String getStudentId() {
+	return studentId;
+	}
+	public void setStudentId(String studentId) {
+	this.studentId = studentId;
+	}
+
+	public Address getAddress() {
+	return address;
+	}
+	public void setAddress(Address address) {
+	this.address = address;
+	}
+	public int getSem() {
+	return sem;
+	}
+	public void setSem(int sem) {
+	this.sem = sem;
+	}
+	public Student(String name, String studentId, String address, int sem) {
+	super();
+	this.name = name;
+	this.studentId = studentId;
+	this.sem = sem;
+	}
+
+	public Student() {
+	// TODO Auto-generated constructor stub
+	}
+	@Override
+	public String toString() {
+	return "Student [name=" + name + ", studentId=" + studentId + ", address=" + address + ", sem=" + sem + "]";
+	}
+
+
+	}
+
+
+--------------------------------------------------------
+package com.spr.spr.bean;
+
+public class Address {
+
+	String city;
+	String state;
+	public String getCity() {
+	return city;
+	}
+	public void setCity(String city) {
+	this.city = city;
+	}
+	public String getState() {
+	return state;
+	}
+	public void setState(String state) {
+	this.state = state;
+	}
+	public Address(String city, String state) {
+	super();
+	this.city = city;
+	this.state = state;
+	}
+	public Address() {
+	// TODO Auto-generated constructor stub
+	}
+
+
+	@Override
+	public String toString() {
+	return "Address [city=" + city + ", state=" + state + "]";
+	}
+
+
+
+	}
+
+
+-------------------------------------
+body
+{
+	background-color: lightblue;
+}
+
+h1{
+	
+	color: navy;
+	margin: 20px;
+	
+}
+	

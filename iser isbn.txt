@@ -1,0 +1,9 @@
+insert multiple record change in booksevice
+
+Book book=new Book(104,"The soem Book","The some AUthor",new Date());
+Book book=new Book(104,"The new Book","The new AUthor",new Date());
+Book book=new Book(104,"The soem Book","The some AUthor",new Date());
+--------------------------------------------------------------------------------------
+
+
+

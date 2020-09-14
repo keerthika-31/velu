@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>EMPLOYEE DETAILS</title>
+</head>
+<body bgcolor="skyblueblue">
+<br>  
+<br>  
+<form  method="post" action="empdissrv">  
+  
+<label> emp name </label>         
+<input type="text" name="empname" size="15"/> <br> <br>  
+
+<label> emp id </label>         
+<input type="number" name="empid" size="15"/> <br> <br>  
+
+
+<label> date of birth</label>         
+<input type="date" name="dob"> <br> <br>  
+
+<label>   
+gender :  
+</label><br>  
+<input type="radio" name="gender"/> Male <br>  
+<input type="radio" name="gender"/> Female <br>  
+<input type="radio" name="gender"/> Other  
+<br>  
+<br> 
+ 
+<label>   
+language known:  
+</label>   
+<select>  
+<option value="languageknown" name="languageknown">language known</option>  
+<option value="English" name="languageknown">English</option>  
+<option value="Hindi" name="languageknown">Hindi</option>  
+<option value="Tamil"  name="languageknown">Tamil</option>  
+<option value="Kannada" name="languageknown">Kannada</option>  
+ 
+</select>  
+  
+<br>  
+<br>  
+
+Address  
+<br>  
+<textarea cols="80" rows="5" value="address" name="area">  
+</textarea>  
+<br> <br>  
+Email:  
+<input type="email" id="email" name="email"> <br>    
+<br> <br>  
+Password:  
+<input type="Password" id="pass" name="pass"> <br>   
+<br> <br>  
+conform password:  
+<input type="Password" id="conpass" name="conpass"> <br> <br>  
+
+<label>   
+Security question:  
+</label>  
+<select> 
+<option value="Security question:">Security question</option> 
+<option value="Security question:">which is your favorite place?</option>  
+<option value="Security question:">what is your pet name?</option> 
+<option value="Security question:">what is your first mobile name?</option>   
+
+</select>
+
+<br><br>
+Security answer:   <input type="text" name="ans">
+<br><br>
+
+
+<input type="submit" value="Submit"/>  
+
+</form>
+</body>
+</html>
+--------------------------------------------------------------------------------------------------------------------
+
+
+package com.empdetails;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+@WebServlet("/empdissrv")
+public class empdissrv extends HttpServlet {
+
+       
+    @Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+    	PrintWriter out=response.getWriter();
+    	   
+        String data=request.getParameter("empname");
+        String data1=request.getParameter("empid");
+        String data2=request.getParameter("dob");
+        String data3=request.getParameter("gender");
+        String data4=request.getParameter("languageknown");
+        String data5=request.getParameter("address");
+        String data6=request.getParameter("email");
+        String data7=request.getParameter("pass");
+        String data8=request.getParameter("conpass");
+        String data9=request.getParameter("securityquestion");
+        String data10=request.getParameter("ans");
+       
+        response.setContentType("text/html");
+        out.println("<h1> <font color='blue'> empname"+ " " +data +" </font> </h1>");
+        out.println("<h1> <font color='blue'> empid"+" " + data1 +" </font> </h1>");
+        out.println("<h1> <font color='blue'> dob"+" " + data2 +" </font> </h1>");
+        out.println("<h1> <font color='blue'> gender"+" " + data3 +" </font> </h1>");
+        out.println("<h1> <font color='blue'> languageknown"+ " " +data4 +" </font> </h1>");
+        out.println("<h1> <font color='blue'> address"+ " " +data5 +" </font> </h1>");
+        out.println("<h1> <font color='blue'> Email"+" " + data6 +" </font> </h1>");
+        out.println("<h1> <font color='blue'> password"+ " " +data7 +" </font> </h1>");
+        out.println("<h1> <font color='blue'> conpassword"+" " + data8 +" </font> </h1>");
+        out.println("<h1> <font color='blue'> securityquestion"+ " " +data9 +" </font> </h1>");
+        out.println("<h1> <font color='blue'> ans"+" " + data10 +" </font> </h1>");
+            
+        
+        }	
+	}
+
+-----------------------------------------------
